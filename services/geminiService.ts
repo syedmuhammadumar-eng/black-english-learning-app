@@ -1,6 +1,5 @@
-
 import { GoogleGenAI, Type } from "@google/genai";
-import type { FillInTheBlankExercise, QuizQuestion, RevisionCard, VocabularyItem, GrammarError } from '../types';
+import type { FillInTheBlankExercise, QuizQuestion, RevisionCard, VocabularyItem, GrammarError, TutorTopic, TutorFeedback } from '../types';
 
 if (!process.env.API_KEY) {
     throw new Error("API_KEY environment variable is not set.");
@@ -147,6 +146,58 @@ Text: "${text}"`;
                     },
                     required: ["error", "correction", "explanation"],
                 },
+            },
+        },
+    });
+
+    return JSON.parse(response.text);
+};
+
+export const generateTutorTopicAndSteps = async (): Promise<TutorTopic> => {
+    const prompt = `Generate an engaging writing topic for an intermediate English learner whose primary language is Urdu. Also, provide a list of 3 simple, sequential steps to help them build a paragraph about this topic. The steps should guide them from an opening sentence to a conclusion.`;
+
+    const response = await ai.models.generateContent({
+        model,
+        contents: prompt,
+        config: {
+            responseMimeType: "application/json",
+            responseSchema: {
+                type: Type.OBJECT,
+                properties: {
+                    topic: { type: Type.STRING },
+                    steps: { type: Type.ARRAY, items: { type: Type.STRING } },
+                },
+                required: ["topic", "steps"],
+            },
+        },
+    });
+
+    return JSON.parse(response.text);
+};
+
+
+export const getTutorFeedbackForChunk = async (topic: string, step: string, userInput: string): Promise<TutorFeedback> => {
+    const prompt = `You are a friendly and encouraging English tutor for an ESL student. The student is writing a paragraph about "${topic}".
+Their current task is: "${step}".
+Here is their writing for this part: "${userInput}"
+
+Analyze the student's writing. Is it grammatically correct and appropriate for the task?
+Provide brief, encouraging feedback. If there are errors, provide a corrected version of the sentence and a simple explanation. If it's good, praise them.
+`;
+
+    const response = await ai.models.generateContent({
+        model,
+        contents: prompt,
+        config: {
+            responseMimeType: "application/json",
+            responseSchema: {
+                type: Type.OBJECT,
+                properties: {
+                    isCorrect: { type: Type.BOOLEAN, description: "True if the user's sentence is grammatically correct and fits the context." },
+                    feedback: { type: Type.STRING, description: "Encouraging feedback or an explanation of the error." },
+                    correctedSentence: { type: Type.STRING, description: "The corrected version of the sentence, if applicable." },
+                },
+                required: ["isCorrect", "feedback"],
             },
         },
     });

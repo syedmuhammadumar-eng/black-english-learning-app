@@ -1,4 +1,3 @@
-
 export interface FillInTheBlankExercise {
   id: string;
   sentence: string;
@@ -7,7 +6,7 @@ export interface FillInTheBlankExercise {
 }
 
 export interface QuizQuestion {
-  id: string;
+  id:string;
   question: string;
   options: string[];
   correctAnswer: string;
@@ -29,4 +28,15 @@ export interface GrammarError {
     error: string;
     correction: string;
     explanation: string;
+}
+
+export interface TutorTopic {
+  topic: string;
+  steps: string[];
+}
+
+export interface TutorFeedback {
+    isCorrect: boolean;
+    feedback: string;
+    correctedSentence?: string;
 }

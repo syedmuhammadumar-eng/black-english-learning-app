@@ -1,12 +1,13 @@
-
 import React from 'react';
+
+type View = 'practice' | 'writing' | 'revision' | 'tutor';
 
 interface SidebarProps {
   tenses: string[];
   selectedTense: string;
   onSelectTense: (tense: string) => void;
-  onSelectView: (view: 'practice' | 'writing' | 'revision') => void;
-  activeView: 'practice' | 'writing' | 'revision';
+  onSelectView: (view: View) => void;
+  activeView: View;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ tenses, selectedTense, onSelectTense, onSelectView, activeView }) => {
@@ -32,6 +33,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ tenses, selectedTense, onSelec
       <div>
         <h2 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 px-4">Main</h2>
         <div className="space-y-1">
+           <NavItem onClick={() => onSelectView('tutor')} isActive={activeView === 'tutor'}>
+            Writing Tutor
+          </NavItem>
           <NavItem onClick={() => onSelectView('writing')} isActive={activeView === 'writing'}>
             Writing Practice
           </NavItem>

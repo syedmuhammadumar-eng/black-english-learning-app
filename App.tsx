@@ -1,8 +1,8 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { PracticeArea } from './components/PracticeArea';
 import { WritingTask } from './components/WritingTask';
+import { WritingTutor } from './components/WritingTutor';
 import { RevisionCards } from './components/RevisionCards';
 import { VocabularyWidget } from './components/VocabularyWidget';
 import { Loader } from './components/ui/Loader';
@@ -11,14 +11,14 @@ import { generateRevisionCards, generateVocabularyList } from './services/gemini
 import type { RevisionCard, VocabularyItem } from './types';
 import { TENSES } from './constants';
 
-type View = 'practice' | 'writing' | 'revision';
+type View = 'practice' | 'writing' | 'revision' | 'tutor';
 
 export default function App() {
   const [tenses, setTenses] = useState<string[]>(TENSES);
   const [selectedTense, setSelectedTense] = useState<string>(TENSES[0]);
   const [revisionCards, setRevisionCards] = useState<RevisionCard[]>([]);
   const [vocabulary, setVocabulary] = useState<VocabularyItem[]>([]);
-  const [activeView, setActiveView] = useState<View>('practice');
+  const [activeView, setActiveView] = useState<View>('tutor');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -65,6 +65,8 @@ export default function App() {
         return <PracticeArea key={selectedTense} tense={selectedTense} />;
       case 'writing':
         return <WritingTask />;
+      case 'tutor':
+        return <WritingTutor />;
       case 'revision':
         return <div className="p-8"><RevisionCards cards={revisionCards} /></div>;
       default:
